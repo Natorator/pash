@@ -1,0 +1,22 @@
+#!/usr/bin/expect
+
+set ::env(PASH) pash
+
+set timeout -1
+
+send_user "Password: "
+stty -echo
+expect_user -re "(.*)\n"
+stty echo
+send_user "\n"
+
+spawn bash -c "[join $argv]"
+
+expect_background -re "assword:|assphrase:|sudo..password for|nter passphrase for " { 
+	  send "$expect_out(1,string)\r" 
+  } eof { 
+	  send_user "pash: forgetting password\n"
+  	exit 
+  }
+interact
+
